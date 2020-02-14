@@ -1,0 +1,256 @@
+// ------------------------------
+// @FH - Infinite Scale
+// ------------------------------
+
+$fh-scale-factor: 0.1 !default;
+$fh-scale-levels: 36 !default;
+$fh-scale-steps: (
+  xxxs: 0.25,
+  xxs: 0.5,
+  xs: 0.75,
+  sm: 1,
+  md: 1.25,
+  lg: 1.5,
+  xl: 1.75,
+  xxl: 2,
+  xxxl: 2.25
+) !default;
+
+$fh-skin-color-default-fg: #404142;
+$fh-skin-color-default-bg: #efeeed;
+$fh-skin-color-primary: #5db1f9;
+$fh-skin-color-primary-darken: darken($fh-skin-color-primary, 20%);
+
+@function pxtopercent($target, $parent: 16) {
+  @return percentage($target / $parent);
+}
+
+@function pxtoem($target, $context: 16) {
+  @return ($target / $context) + 0em;
+}
+
+@mixin scale-steps($ctx, $unit) {
+  @each $level in $fh-scale-steps {
+    $idx: index($fh-scale-steps, $level);
+    $key: nth(map-keys($fh-scale-steps), $idx);
+    #{$ctx}[fh-scale="#{$key}"] {
+      font-size: map-get($fh-scale-steps, $key) + $unit;
+    }
+
+    #{$ctx}[fh-scale-root="#{$key}"] {
+      font-size: map-get($fh-scale-steps, $key) + rem;
+    }
+
+    #{$ctx}[fh-scale-relative="#{$key}"] {
+      font-size: map-get($fh-scale-steps, $key) + em;
+    }
+  }
+}
+
+@mixin scale-levels($ctx, $unit) {
+  @for $idx from 1 through $fh-scale-levels {
+    $size: $fh-scale-factor * $idx;
+    #{$ctx}[fh-scale="#{$idx}"] {
+      font-size: $size + $unit;
+    }
+
+    #{$ctx}[fh-scale-root="#{$idx}"] {
+      font-size: $size + rem;
+    }
+
+    #{$ctx}[fh-scale-relative="#{$idx}"] {
+      font-size: $size + em;
+    }
+  }
+}
+
+@mixin fh-scale($target: self, $unit: em) {
+  $ctx: if($target == self, '&', '');
+  @include scale-levels($ctx, $unit);
+  @include scale-steps($ctx, $unit);
+}
+
+:root {
+  --skin-color-default-fg: $fh-skin-color-default-fg;
+  --skin-color-default-bg: $fh-skin-color-default-bg;
+  --skin-color-primary: $fh-skin-color-primary;
+  --skin-color-primary-darken: $fh-skin-color-primary-darken;
+}
+
+html {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  background-image: linear-gradient(-225deg, #a247ed 0, #7548ee 100%);
+  color: white;
+}
+
+body {
+  min-height: 100vh;
+  //font-size: calc(14px + (26 - 14) * ((100vw - 300px) / (1600 - 300)));
+}
+
+* {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+
+  &:before,
+  &:after {
+    box-sizing: inherit;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+::selection,
+[fh-highlight] {
+  color: white;
+  background-color: rgba(black, 0.2);
+  text-shadow : 1px 1px 0.5em rgba(white, 0.5);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 1em;
+  margin-bottom: 0.75em;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.5em;
+}
+
+h3 {
+  font-size: 1.17em;
+}
+
+h4 {
+  font-size: 1em;
+}
+
+h5 {
+  font-size: 0.83em;
+}
+
+h6 {
+  font-size: 0.67em;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 1.5em;
+}
+
+pre {
+  display: inline-flex;
+  margin-top: 1em;
+  margin-bottom: 1.25em;
+  padding: 0.2em 0.5em;
+}
+
+hr {
+  margin: 1.25em auto;
+  border: 1px solid rgba(white, 0.25);
+}
+
+img {
+  width: auto;
+  max-width: 100%;
+}
+
+svg {
+  fill: currentColor;
+}
+
+section {
+  display: block;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.text,
+.button,
+.icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.text,
+.button {
+  font-size: 1em;
+}
+
+.icon {
+  width: 1em;
+}
+
+.icon,
+.text {
+  color: inherit;
+}
+
+.button,
+button,
+input[type="button"] {
+  appearance: none;
+  line-height: 1;
+  margin: 0.25rem auto;
+  padding: 0.33em 0.75em;
+  border-radius: 0.33em;
+  color: $fh-skin-color-default-fg;
+  background-color: $fh-skin-color-default-bg;
+  border: 1px solid $fh-skin-color-default-bg;
+  box-shadow: 0 2px 2px rgba($fh-skin-color-default-fg, 0.08),
+    0 4px 4px rgba($fh-skin-color-default-fg, 0.06),
+    0 8px 8px rgba($fh-skin-color-default-fg, 0.04),
+    0 16px 16px rgba($fh-skin-color-default-fg, 0.02);
+
+  @include fh-scale(self, em);
+}
+
+.icon + .text {
+  margin-left: 0.5em;
+}
+
+.buttonCmp {
+  font-size: 1rem;
+  @include fh-scale(self, rem);
+}
+
+.typo {
+  font-size: 1rem;
+  padding: 1rem;
+}
+
+.content {
+  font-size: 1rem;
+  @include fh-scale(child, em);
+}
+
+[fh-content] {
+  &::before {
+    content: attr(fh-content);
+  }
+}
+
+[fh-text='left'] {
+  text-align: left;
+}
+
+[fh-text='center'] {
+  text-align: center;
+}
+
+[fh-text='right'] {
+  text-align: right;
+}
